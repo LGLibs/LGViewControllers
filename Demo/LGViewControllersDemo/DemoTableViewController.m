@@ -1,9 +1,9 @@
 //
-//  DemoTableViewController.m
-//  LGViewControllersDemo
+// DemoTableViewController.m
+// LGViewControllersDemo
 //
-//  Created by Grigory Lutkov on 26.03.15.
-//  Copyright (c) 2015 Grigory Lutkov. All rights reserved.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2015 Grigorii Lutkov <grigorii@lutkov.dev>
 //
 
 #import "DemoTableViewController.h"
@@ -20,7 +20,7 @@
     if (self)
     {
         self.backgroundColor = [UIColor whiteColor];
-        
+
         self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return self;
@@ -30,7 +30,7 @@
 {
     self.textLabel.font = [UIFont systemFontOfSize:16.0];
     self.textLabel.numberOfLines = 0;
-    
+
     [super layoutSubviews];
 }
 
@@ -62,15 +62,15 @@
     if (self)
     {
         self.title = title;
-        
+
         self.view.backgroundColor = [UIColor whiteColor];
-        
+
         [self.tableView registerClass:[DemoTableViewCell class] forCellReuseIdentifier:@"cell"];
-        
+
         [self.tableView.placeholderView showActivityIndicatorAnimated:NO completionHandler:nil];
-        
+
         self.tableView.alwaysBounceVertical = YES;
-        
+
         [self addItemsToDataArray];
     }
     return self;
@@ -88,11 +88,11 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void)
                    {
                        [self.tableView.placeholderView dismissAnimated:YES completionHandler:nil];
-                       
+
                        _initialized = YES;
                    });
 }
@@ -112,9 +112,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DemoTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    
+
     cell.textLabel.text = _dataArray[indexPath.row];
-    
+
     return cell;
 }
 
@@ -123,9 +123,9 @@
 - (CGFloat)tableView:(LGTableView *)tableView heightForRowAtIndexPathAsync:(NSIndexPath *)indexPath
 {
     NSString *string = _dataArray[indexPath.row];
-    
+
     CGSize size = [string sizeWithFont:[UIFont systemFontOfSize:16.0] constrainedToSize:CGSizeMake(tableView.frame.size.width, CGFLOAT_MAX)];
-    
+
     return size.height+20.f;
 }
 
@@ -147,24 +147,24 @@
         scrollView.contentOffset.y + scrollView.contentInset.top + scrollView.frame.size.height >= scrollView.contentSize.height - 100.f)
     {
         _loadingData = YES;
-        
+
         [self.tableView beginUpdates];
-        
+
         [self addItemsToDataArray];
-        
+
         NSMutableArray *array = [NSMutableArray new];
-        
+
         NSUInteger count = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 30 : 40);
-        
+
         for (NSUInteger i=_dataArray.count-count; i<_dataArray.count; i++)
             [array addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-        
+
         [self.tableView insertRowsAtIndexPaths:array
                               withRowAnimation:UITableViewRowAnimationAutomatic
                              completionHandler:^(void)
         {
             [self.tableView endUpdates];
-            
+
             _loadingData = NO;
         }];
     }
@@ -175,13 +175,13 @@
 - (void)refreshActions
 {
     [_dataArray removeAllObjects];
-    
+
     [self addItemsToDataArray];
-    
+
     [self.tableView reloadDataWithCompletionHandler:^(void)
      {
          [UIView transitionWithView:self.tableView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:nil completion:nil];
-         
+
          [self.tableView.refreshView endRefreshing];
      }];
 }
@@ -190,17 +190,17 @@
 {
     if (!_dataArray)
         _dataArray = [NSMutableArray new];
-    
+
     NSUInteger count = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 30 : 40);
-    
+
     for (NSUInteger i=0; i<count; i++)
     {
         NSArray *variants = @[[NSString stringWithFormat:@"Row %i Line 1", (int)_dataArray.count+1],
                               [NSString stringWithFormat:@"Row %i Line 1\nRow %i Line 2", (int)_dataArray.count+1, (int)_dataArray.count+1],
                               [NSString stringWithFormat:@"Row %i Line 1\nRow %i Line 2\nRow %i Line 3", (int)_dataArray.count+1, (int)_dataArray.count+1, (int)_dataArray.count+1]];
-        
+
         NSUInteger i = arc4random() % 3;
-        
+
         [_dataArray addObject:variants[i]];
     }
 }

@@ -1,9 +1,9 @@
 //
-//  ViewController.m
-//  LGViewControllersDemo
+// ViewController.m
+// LGViewControllersDemo
 //
-//  Created by Grigory Lutkov on 18.02.15.
-//  Copyright (c) 2015 Grigory Lutkov. All rights reserved.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2015 Grigorii Lutkov <grigorii@lutkov.dev>
 //
 
 #import "TableViewController.h"
@@ -26,12 +26,12 @@
     if (self)
     {
         self.title = @"LGViewControllers";
-        
+
         _titlesArray = @[@"LGScrollViewController",
                          @"LGTableViewController",
                          @"LGCollectionViewController",
                          @"LGWebViewController"];
-        
+
         [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     }
     return self;
@@ -54,10 +54,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    
+
     cell.textLabel.font = [UIFont systemFontOfSize:16.f];
     cell.textLabel.text = _titlesArray[indexPath.row];
-    
+
     return cell;
 }
 

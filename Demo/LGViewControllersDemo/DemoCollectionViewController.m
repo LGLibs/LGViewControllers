@@ -1,9 +1,9 @@
 //
-//  DemoCollectionViewController.m
-//  LGViewControllersDemo
+// DemoCollectionViewController.m
+// LGViewControllersDemo
 //
-//  Created by Grigory Lutkov on 26.03.15.
-//  Copyright (c) 2015 Grigory Lutkov. All rights reserved.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2015 Grigorii Lutkov <grigorii@lutkov.dev>
 //
 
 #import "DemoCollectionViewController.h"
@@ -22,7 +22,7 @@
     if (self)
     {
         self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.f];
-        
+
         _textLabel = [UILabel new];
         _textLabel.backgroundColor = [UIColor clearColor];
         _textLabel.font = [UIFont systemFontOfSize:16.f];
@@ -34,7 +34,7 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    
+
     [_textLabel sizeToFit];
     _textLabel.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
     _textLabel.frame = CGRectIntegral(_textLabel.frame);
@@ -68,15 +68,15 @@
     if (self)
     {
         self.title = title;
-        
+
         self.view.backgroundColor = [UIColor whiteColor];
-        
+
         [self.collectionView registerClass:[DemoCollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
-        
+
         [self.collectionView.placeholderView showActivityIndicatorAnimated:NO completionHandler:nil];
-        
+
         self.collectionView.alwaysBounceVertical = YES;
-        
+
         [self addItemsToDataArray];
     }
     return self;
@@ -94,12 +94,12 @@
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    
+
     NSUInteger numberOfCellsInARow = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 3 : 6);
     if (self.view.frame.size.width > self.view.frame.size.height) numberOfCellsInARow += 2;
-    
+
     _loadingData = YES;
-    
+
     [self.collectionView setViewWidth:self.view.frame.size.width
                            cellAspect:1.f
                   numberOfCellsInARow:numberOfCellsInARow
@@ -108,7 +108,7 @@
                   headerReferenceSize:CGSizeZero
                   footerReferenceSize:CGSizeZero
                       scrollDirection:UICollectionViewScrollDirectionVertical];
-    
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void)
                    {
                        _loadingData = NO;
@@ -118,11 +118,11 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void)
                    {
                        [self.collectionView.placeholderView dismissAnimated:YES completionHandler:nil];
-                       
+
                        _initialized = YES;
                    });
 }
@@ -142,11 +142,11 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DemoCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-    
+
     cell.textLabel.text = _dataArray[indexPath.row];
-    
+
     [cell setNeedsLayout];
-    
+
     return cell;
 }
 
@@ -170,18 +170,18 @@
         scrollView.contentOffset.y + scrollView.contentInset.top + scrollView.frame.size.height >= scrollView.contentSize.height - 100.f)
     {
         _loadingData = YES;
-        
+
         [self.collectionView performBatchUpdates:^(void)
          {
              [self addItemsToDataArray];
-             
+
              NSMutableArray *array = [NSMutableArray new];
-             
+
              NSUInteger count = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 30 : 70);
-             
+
              for (NSUInteger i=_dataArray.count-count; i<_dataArray.count; i++)
                  [array addObject:[NSIndexPath indexPathForItem:i inSection:0]];
-             
+
              [self.collectionView insertItemsAtIndexPaths:array];
          }
                                       completion:^(BOOL finished)
@@ -196,13 +196,13 @@
 - (void)refreshActions
 {
     [_dataArray removeAllObjects];
-    
+
     [self addItemsToDataArray];
-    
+
     [self.collectionView reloadData];
-    
+
     [UIView transitionWithView:self.collectionView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:nil completion:nil];
-    
+
     [self.collectionView.refreshView endRefreshing];
 }
 
@@ -210,9 +210,9 @@
 {
     if (!_dataArray)
         _dataArray = [NSMutableArray new];
-    
+
     NSUInteger count = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 30 : 70);
-    
+
     for (NSUInteger i=0; i<count; i++)
         [_dataArray addObject:[NSString stringWithFormat:@"Item %i", (int)_dataArray.count+1]];
 }

@@ -1,30 +1,9 @@
 //
-//  LGTableView.m
-//  LGViewControllers
+// LGTableView.m
+// LGViewControllers
 //
-//
-//  The MIT License (MIT)
-//
-//  Copyright (c) 2015 Grigory Lutkov <Friend.LGA@gmail.com>
-//  (https://github.com/Friend-LGA/LGViewControllers)
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in all
-//  copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//  SOFTWARE.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2015 Grigorii Lutkov <grigorii@lutkov.dev>
 //
 
 #import "LGTableView.h"
@@ -92,9 +71,9 @@
 - (void)initializeWithPlaceholderViewEnabled:(BOOL)placeholderViewEnabled refreshHandler:(void(^)())refreshHandler
 {
     self.backgroundColor = [UIColor clearColor];
-    
+
     self.placeholderViewEnabled = placeholderViewEnabled;
-    
+
     if (refreshHandler)
         [self setRefreshViewEnabledWithHandler:refreshHandler];
 }
@@ -106,7 +85,7 @@
 #if DEBUG
     NSLog(@"%s [Line %d]", __PRETTY_FUNCTION__, __LINE__);
 #endif
-    
+
     self.delegateLG = nil;
 }
 
@@ -117,10 +96,10 @@
     if (_topSeparatorView && CGSizeEqualToSize(self.frame.size, frame.size))
     {
         CGFloat widthDif = frame.size.width-self.frame.size.width;
-        
+
         _topSeparatorView.frame = CGRectMake(_topSeparatorView.frame.origin.x, _topSeparatorView.frame.origin.y, _topSeparatorView.frame.size.width+widthDif, _topSeparatorView.frame.size.height);
     }
-    
+
     [super setFrame:frame];
 }
 
@@ -129,7 +108,7 @@
 - (void)setDelegateLG:(id<LGTableViewDelegate>)delegateLG
 {
     _delegateLG = delegateLG;
-    
+
     if (_delegateLG) _heightForRowsArray = [NSMutableArray new];
     else _heightForRowsArray = nil;
 }
@@ -141,7 +120,7 @@
     if (!_refreshViewEnabled && !_refreshView)
     {
         _refreshViewEnabled = YES;
-        
+
         _refreshView = [LGRefreshView refreshViewWithScrollView:self
                                                  refreshHandler:refreshHandler];
     }
@@ -152,10 +131,10 @@
     if (_refreshViewEnabled && _refreshView)
     {
         _refreshViewEnabled = NO;
-        
+
         if (_refreshView.superview)
             [_refreshView removeFromSuperview];
-        
+
         _refreshView = nil;
     }
 }
@@ -165,14 +144,14 @@
     if (_placeholderViewEnabled != placeholderViewEnabled)
     {
         _placeholderViewEnabled = placeholderViewEnabled;
-        
+
         if (_placeholderViewEnabled && !_placeholderView)
             _placeholderView = [LGPlaceholderView placeholderViewWithView:self];
         else if (!_placeholderViewEnabled && _placeholderView)
         {
             if (_placeholderView.superview)
                 [_placeholderView removeFromSuperview];
-            
+
             _placeholderView = nil;
         }
     }
@@ -187,7 +166,7 @@
         [_topSeparatorView removeFromSuperview];
         _topSeparatorView = nil;
     }
-    
+
     _topSeparatorView = [UIView new];
     _topSeparatorView.backgroundColor = color;
     _topSeparatorView.frame = CGRectMake(edgeInsets.left, -thinckness, self.frame.size.width-edgeInsets.left-edgeInsets.right, thinckness);
@@ -208,31 +187,31 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSMutableArray *heightForRowsArray = [NSMutableArray new];
-                           
+
                            for (NSUInteger section=0; section<[self.dataSource numberOfSectionsInTableView:self]; section++)
                            {
                                NSMutableArray *sectionArray = [NSMutableArray new];
-                               
+
                                for (NSUInteger row=0; row<[self.dataSource tableView:self numberOfRowsInSection:section]; row++)
                                {
                                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
-                                   
+
                                    CGFloat height = [_delegateLG tableView:self heightForRowAtIndexPathAsync:indexPath];
-                                   
+
                                    NSNumber *heightObject = [NSNumber numberWithFloat:height];
-                                   
+
                                    [sectionArray addObject:heightObject];
                                }
-                               
+
                                [heightForRowsArray addObject:sectionArray];
                            }
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray;
-                                              
+
                                               [super reloadData];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -240,7 +219,7 @@
     else
     {
         [super reloadData];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -257,34 +236,34 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSMutableArray *heightForRowsArray = _heightForRowsArray.mutableCopy;
-                           
+
                            for (NSUInteger section=0; section<[self.dataSource numberOfSectionsInTableView:self]; section++)
                            {
                                NSMutableArray *sectionArray = heightForRowsArray[section];
-                               
+
                                for (NSUInteger row=0; row<[self.dataSource tableView:self numberOfRowsInSection:section]; row++)
                                {
                                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
-                                   
+
                                    if ([indexPaths containsObject:indexPath])
                                    {
                                        CGFloat height = [_delegateLG tableView:self heightForRowAtIndexPathAsync:indexPath];
-                                       
+
                                        NSNumber *heightObject = [NSNumber numberWithFloat:height];
-                                       
+
                                        [sectionArray replaceObjectAtIndex:row withObject:heightObject];
                                    }
                                }
-                               
+
                                [heightForRowsArray replaceObjectAtIndex:section withObject:sectionArray];
                            }
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray;
-                                              
+
                                               [super reloadRowsAtIndexPaths:indexPaths withRowAnimation:animation];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -292,7 +271,7 @@
     else
     {
         [super reloadRowsAtIndexPaths:indexPaths withRowAnimation:animation];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -309,32 +288,32 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSMutableArray *heightForRowsArray = _heightForRowsArray.mutableCopy;
-                           
+
                            for (NSUInteger section=0; section<[self.dataSource numberOfSectionsInTableView:self]; section++)
                                if ([sections containsIndex:section])
                                {
                                    NSMutableArray *sectionArray = heightForRowsArray[section];
-                                   
+
                                    for (NSUInteger row=0; row<[self.dataSource tableView:self numberOfRowsInSection:section]; row++)
                                    {
                                        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
-                                       
+
                                        CGFloat height = [_delegateLG tableView:self heightForRowAtIndexPathAsync:indexPath];
-                                       
+
                                        NSNumber *heightObject = [NSNumber numberWithFloat:height];
-                                       
+
                                        [sectionArray replaceObjectAtIndex:row withObject:heightObject];
                                    }
-                                   
+
                                    [heightForRowsArray replaceObjectAtIndex:section withObject:sectionArray];
                                }
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray;
-                                              
+
                                               [super reloadSections:sections withRowAnimation:animation];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -342,7 +321,7 @@
     else
     {
         [super reloadSections:sections withRowAnimation:animation];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -361,13 +340,13 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSArray *heightForRowsArray = [self insertRowsAtIndexPaths:indexPaths inArray:_heightForRowsArray];
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray.mutableCopy;
-                                              
+
                                               [super insertRowsAtIndexPaths:indexPaths withRowAnimation:animation];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -375,7 +354,7 @@
     else
     {
         [super insertRowsAtIndexPaths:indexPaths withRowAnimation:animation];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -384,21 +363,21 @@
 {
     NSSortDescriptor *sortDescriptor1 = [[NSSortDescriptor alloc] initWithKey:@"section" ascending:YES];
     NSSortDescriptor *sortDescriptor2 = [[NSSortDescriptor alloc] initWithKey:@"row" ascending:YES];
-    
+
     NSArray *indexPathsSorted = [indexPaths sortedArrayUsingDescriptors:@[sortDescriptor1, sortDescriptor2]];
-    
+
     NSMutableArray *heightForRowsArray = array.mutableCopy;
-    
+
     for (NSIndexPath *indexPath in indexPathsSorted)
     {
         CGFloat height = [_delegateLG tableView:self heightForRowAtIndexPathAsync:indexPath];
-        
+
         NSNumber *heightObject = [NSNumber numberWithFloat:height];
-        
+
         if (heightForRowsArray.count > indexPath.section)
         {
             NSMutableArray *sectionArray = heightForRowsArray[indexPath.section];
-            
+
             if (sectionArray.count > indexPath.row)
                 [sectionArray insertObject:heightObject atIndex:indexPath.row];
             else
@@ -407,13 +386,13 @@
         else
         {
             NSMutableArray *sectionArray = [NSMutableArray new];
-            
+
             [sectionArray addObject:heightObject];
-            
+
             [heightForRowsArray addObject:sectionArray];
         }
     }
-    
+
     return heightForRowsArray;
 }
 
@@ -429,13 +408,13 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSArray *heightForRowsArray = [self insertSections:sections inArray:_heightForRowsArray];
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray.mutableCopy;
-                                              
+
                                               [super insertSections:sections withRowAnimation:animation];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -443,7 +422,7 @@
     else
     {
         [super insertSections:sections withRowAnimation:animation];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -451,33 +430,33 @@
 - (NSMutableArray *)insertSections:(NSIndexSet *)sections inArray:(NSArray *)array
 {
     NSMutableIndexSet *sectionsSorted = [NSMutableIndexSet new];
-    
+
     for (NSUInteger i=0; i<sections.count; i++)
     {
         if (i == 0) [sectionsSorted addIndex:[sections indexGreaterThanOrEqualToIndex:0]];
         else [sectionsSorted addIndex:[sections indexGreaterThanIndex:sectionsSorted.lastIndex]];
     }
-    
+
     NSMutableArray *heightForRowsArray = array.mutableCopy;
-    
+
     [sectionsSorted enumerateIndexesUsingBlock:^(NSUInteger section, BOOL *stop)
      {
          NSMutableArray *sectionArray = [NSMutableArray new];
-         
+
          for (NSUInteger row=0; row<[self.dataSource tableView:self numberOfRowsInSection:section]; row++)
          {
              NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
-             
+
              CGFloat height = [_delegateLG tableView:self heightForRowAtIndexPathAsync:indexPath];
-             
+
              NSNumber *heightObject = [NSNumber numberWithFloat:height];
-             
+
              [sectionArray addObject:heightObject];
          }
-         
+
          [heightForRowsArray insertObject:sectionArray atIndex:section];
      }];
-    
+
     return heightForRowsArray;
 }
 
@@ -495,13 +474,13 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSArray *heightForRowsArray = [self deleteRowsAtIndexPaths:indexPaths inArray:_heightForRowsArray];
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray.mutableCopy;
-                                              
+
                                               [super deleteRowsAtIndexPaths:indexPaths withRowAnimation:animation];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -509,7 +488,7 @@
     else
     {
         [super deleteRowsAtIndexPaths:indexPaths withRowAnimation:animation];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -518,21 +497,21 @@
 {
     NSSortDescriptor *sortDescriptor1 = [[NSSortDescriptor alloc] initWithKey:@"section" ascending:NO];
     NSSortDescriptor *sortDescriptor2 = [[NSSortDescriptor alloc] initWithKey:@"row" ascending:NO];
-    
+
     NSArray *indexPathsSorted = [indexPaths sortedArrayUsingDescriptors:@[sortDescriptor1, sortDescriptor2]];
-    
+
     NSMutableArray *heightForRowsArray = array.mutableCopy;
-    
+
     for (NSIndexPath *indexPath in indexPathsSorted)
     {
         NSMutableArray *sectionArray = heightForRowsArray[indexPath.section];
-        
+
         [sectionArray removeObjectAtIndex:indexPath.row];
-        
+
         if (!sectionArray.count)
             [heightForRowsArray removeObjectAtIndex:indexPath.section];
     }
-    
+
     return heightForRowsArray;
 }
 
@@ -548,13 +527,13 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void)
                        {
                            NSArray *heightForRowsArray = [self deleteSections:sections inArray:_heightForRowsArray];
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = heightForRowsArray.mutableCopy;
-                                              
+
                                               [super deleteSections:sections withRowAnimation:animation];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -562,7 +541,7 @@
     else
     {
         [super deleteSections:sections withRowAnimation:animation];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -570,24 +549,24 @@
 - (NSMutableArray *)deleteSections:(NSIndexSet *)sections inArray:(NSArray *)array
 {
     NSMutableIndexSet *sectionsSorted = [NSMutableIndexSet new];
-    
+
     for (NSUInteger i=0; i<sections.count; i++)
     {
         if (i == 0) [sectionsSorted addIndex:[sections indexGreaterThanOrEqualToIndex:0]];
         else [sectionsSorted addIndex:[sections indexGreaterThanIndex:sectionsSorted.lastIndex]];
     }
-    
+
     NSMutableArray *heightForRowsArray = array.mutableCopy;
-    
+
     NSUInteger section = sectionsSorted.lastIndex;
-    
+
     while (section != NSNotFound)
     {
         [heightForRowsArray removeObjectAtIndex:section];
-        
+
         section = [sectionsSorted indexLessThanIndex:section];
     }
-    
+
     return heightForRowsArray;
 }
 
@@ -606,13 +585,13 @@
                        {
                            NSMutableArray *array1 = [self deleteRowsAtIndexPaths:@[indexPath] inArray:_heightForRowsArray];
                            NSMutableArray *array2 = [self insertRowsAtIndexPaths:@[newIndexPath] inArray:array1];
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = array2;
-                                              
+
                                               [super moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -620,7 +599,7 @@
     else
     {
         [super moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
-        
+
         if (completionHandler) completionHandler();
     }
 }
@@ -638,13 +617,13 @@
                        {
                            NSMutableArray *array1 = [self deleteSections:[NSIndexSet indexSetWithIndex:section] inArray:_heightForRowsArray];
                            NSMutableArray *array2 = [self insertSections:[NSIndexSet indexSetWithIndex:newSection] inArray:array1];
-                           
+
                            dispatch_async(dispatch_get_main_queue(), ^(void)
                                           {
                                               _heightForRowsArray = array2;
-                                              
+
                                               [super moveSection:section toSection:newSection];
-                                              
+
                                               if (completionHandler) completionHandler();
                                           });
                        });
@@ -652,7 +631,7 @@
     else
     {
         [super moveSection:section toSection:newSection];
-        
+
         if (completionHandler) completionHandler();
     }
 }
